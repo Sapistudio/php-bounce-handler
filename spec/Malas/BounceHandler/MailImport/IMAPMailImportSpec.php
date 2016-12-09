@@ -10,6 +10,12 @@ class IMAPMailImportSpec extends ObjectBehavior
 {
     function it_is_initializable()
     {
+    	$this->beConstructedWith(['mailbox' => '']);
         $this->shouldHaveType(IMAPMailImport::class);
+    }
+
+    function it_should_not_be_initialized_without_mailbox_option() {
+    	$this->beConstructedWith(['random_option' => '']);
+    	$this->shouldThrow('\InvalidArgumentException')->duringInstantiation();
     }
 }

@@ -20,9 +20,9 @@ class BounceHandlerSpec extends ObjectBehavior
 
     function it_should_not_parse_non_message_data() {
     	$result = $this->parse([
-    		new Message(),
+    		new Message('', ''),
     		null,
-    		new Message()
+    		new Message('', '')
     	]);
     	$result->shouldBeAnInstanceOf('Malas\BounceHandler\Model\Result');
     	$result->getMessagesParsed()->shouldBe(2);
@@ -38,9 +38,9 @@ class BounceHandlerSpec extends ObjectBehavior
 
     static function getMessageArray() {
     	return [
-    		new Message(),
-    		new Message(),
-    		new Message()
+    		new Message('', ''),
+    		new Message('', ''),
+    		new Message('', '')
     	];
     }
 
