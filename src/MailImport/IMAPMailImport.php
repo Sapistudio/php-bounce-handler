@@ -46,7 +46,7 @@ class IMAPMailImport implements MailImportInterface {
 	}
 
 	protected function connect() {
-        $imap = imap_open($this->getMailbox(), $this->getUsername(), $this->getPassword(), $this->getOptions);
+        $imap = imap_open($this->getMailbox(), $this->getUsername(), $this->getPassword(), $this->getOptions());
         if (!$imap) {
         	throw new \InvalidArgumentException('Could not connect: '.imap_last_error());
         } 
