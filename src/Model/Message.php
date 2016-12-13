@@ -23,4 +23,12 @@ class Message {
 		$this->body = $body;
 		$this->status = self::STATUS_UNKNOWN;
 	}
+
+	public function setStatus($status) {
+		$this->status = $status;
+	}
+
+	public function getStatus() {
+		return $this->status;
+	}
 }
