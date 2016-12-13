@@ -87,4 +87,8 @@ class IMAPMailImport implements MailImportInterface {
 	public function shouldDelete() {
 		return $this->delete_mail;
 	}
+
+	public function getOptions() {
+		return $this->options;
+	}
 }
