@@ -33,6 +33,7 @@ class IMAPMailImport implements MailImportInterface {
 
 	public function __construct($options) {
 		if (!isset($options['mailbox'])) throw new \InvalidArgumentException('Mailbox must be defined');
+		$this->mailbox = $options['mailbox'];
 		$this->username = isset($options['username']) ? $options['username'] : '';
 		$this->password = isset($options['password']) ? $options['password'] : '';
 		$this->options = isset($options['options']) ? $options['options'] : null;
@@ -63,11 +64,11 @@ class IMAPMailImport implements MailImportInterface {
             $header = @imap_fetchheader($this->mailboxHandler, $i);
             $body = @imap_body($this->mailboxHandler, $i);
             $result[] = new Message($header, $body);
-            if ($this->shoudlDelete()) {
+            if ($this->getDeleteMail()) {
             	imap_delete($imap, $i);
             }
         }
-        if ($this->shouldDelete()) {
+        if ($this->getDeleteMail()) {
         	imap_expunge($imap);
         }
         imap_close($imap);
@@ -84,7 +85,7 @@ class IMAPMailImport implements MailImportInterface {
 	public function getPassword() {
 		return $this->password;
 	}
-	public function shouldDelete() {
+	public function getDeleteMail() {
 		return $this->delete_mail;
 	}
 
