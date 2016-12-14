@@ -61,8 +61,8 @@ class IMAPMailImport implements MailImportInterface {
         
         $result = [];
         for ($i = 1; $i <= $$limit; $i++) {
-            $header = @imap_fetchheader($this->mailboxHandler, $i);
-            $body = @imap_body($this->mailboxHandler, $i);
+            $header = imap_fetchheader($imap, $i);
+            $body = imap_body($imap, $i);
             $result[] = new Message($header, $body);
             if ($this->getDeleteMail()) {
             	imap_delete($imap, $i);
@@ -72,6 +72,7 @@ class IMAPMailImport implements MailImportInterface {
         	imap_expunge($imap);
         }
         imap_close($imap);
+        return $result;
 	}
 
 	public function getMailbox() {
