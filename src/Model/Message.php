@@ -24,6 +24,14 @@ class Message {
 		$this->status = self::STATUS_UNKNOWN;
 	}
 
+	public function setRecipient($email) {
+		$this->recipient = $email;
+	}
+
+	public function getRecipient() {
+		return $this->recipient;
+	}
+
 	public function setStatus($status) {
 		$this->status = $status;
 	}

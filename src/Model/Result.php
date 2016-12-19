@@ -13,24 +13,52 @@ class Result {
 	 */
 	protected $parsed;
 
+	/**
+	 * Soft bounce messages. One can try sending messages to these recipients. however if soft bounces continue, you should stop sending emails to the recipient in order to maintain good sender reputation.
+	 * @var [type]
+	 */
 	protected $soft_bounced;
 
+	/**
+	 * Hard bounced messages. One should stop sending emails to these recipients.
+	 * @var array
+	 */
 	protected $hard_bounced;
 
+	/**
+	 * Unsuccessfully parsed messages. These should be examined manually. Preferably new rules to the library should be added in order to parse these automatically next time.
+	 * @var array
+	 */
 	protected $unknown;
+
+	/**
+	 * Messages which were identified as autoreplies, manual replies, vacation autoreplies, etc. In short messages which are not a bounce of any kind and were parsed successfully.
+	 * @var array
+	 */
+	protected $other;
 
 	public function __construct() {
 		$this->parsed = 0;
 		$this->soft_bounced = [];
 		$this->hard_bounced = [];
 		$this->unknown = [];
+		$this->other = [];
 	}
 
 	public function getMessagesParsed() {
 		return $this->parsed;
 	}
 
-	public function addParsedResult() {
+	public function addParsedResult(Message $message) {
+		if ($message->getStatus() == Message::STATUS_HARD_BOUNCE) {
+			$this->addHardBounced($message);
+		} elseif ($message->getStatus() == Message::STATUS_SOFT_BOUNCE) {
+			$this->addSoftBounced($message);
+		} elseif ($message->getStatus() == Message::STATUS_OK) {
+			$this->addOther($message);
+		} else {
+			$this->addUnknown($message);
+		}
 		$this->addMessagesParsed(1);
 	}
 
@@ -44,6 +72,10 @@ class Result {
 
 	public function addUnknown(Message $message) {
 		$this->unknown[] = $message;
+	}
+
+	public function addOther(Message $message) {
+		$this->other[] = $message;
 	}
 
 	public function addMessagesParsed($count) {
