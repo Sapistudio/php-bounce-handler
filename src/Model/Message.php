@@ -39,4 +39,12 @@ class Message {
 	public function getStatus() {
 		return $this->status;
 	}
+
+	public function getHeader() {
+		return $this->header;
+	}
+
+	public function getBody() {
+		return $this->body;
+	}
 }

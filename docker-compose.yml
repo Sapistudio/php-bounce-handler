@@ -1,0 +1,4 @@
+php:
+  build: docker/php
+  volumes:
+    - ./:/var/www/

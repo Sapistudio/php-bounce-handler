@@ -44,7 +44,6 @@ class BounceHandler {
 	 * @return Message          The same Message given to parse, but with recipient set if the parsing was successfull. 
 	 */
 	protected function parseRecipient(Message $message) {
-
 		return $message;
 	}
 }
