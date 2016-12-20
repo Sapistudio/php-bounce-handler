@@ -42,20 +42,18 @@ class BounceHandlerSpec extends ObjectBehavior
         $msg->getRecipient()->shouldBe('ttt.eepe@lt.g4s.com');
     }
 
-    function it_should_have_messages_recipient_after_parsing_vacation_autoreply() {
-        /*
-        $msgs = $this->getMessageArray();
-        $msg = $this->parseMessage($msgs[1]);
-
-        $msg->getRecipient()->shouldBe('visita@vvvgr.lt');
-        */
-    }
-
     function it_should_have_messages_recipient_after_parsing_delivery_failure_bounce() {
         $msgs = $this->getMessageArray();
         $msg = $this->parseMessage($msgs[2]);
 
         $msg->getRecipient()->shouldBe('fnc@ppp.ru');
+    }
+
+    function it_should_have_message_status_ok_after_parsing_vacation_autoreply() {
+        $msgs = $this->getMessageArray();
+        $msg = $this->parseMessage($msgs[1]);
+
+        $msg->getStatus()->shouldBe(Message::STATUS_UNKNOWN);
     }
 
     /**

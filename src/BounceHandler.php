@@ -33,16 +33,13 @@ class BounceHandler {
 	public function parseMessage(Message $message) {
 		// get original message headers
 		$headers = $this->parseHeaders($message->getHeader());
-		// check subject of message. Mail delivery failure
-		$subject = isset($headers['subject']) ? $headers['subject'] : null;
 		// get original recipient
 		$original_message_headers = $this->parseHeaders($message->getBody());
-		
 		if (isset($original_message_headers['to'])) {
 			// message parsed successfully
 			$message->setRecipient($original_message_headers['to']);
 			$message->setStatus(Message::STATUS_OK);
-		}		
+		}
 		return $message;
 	}
 
