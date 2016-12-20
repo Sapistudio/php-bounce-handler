@@ -19,13 +19,12 @@ class BounceHandlerSpec extends ObjectBehavior
     }
 
     function it_should_not_parse_non_message_data() {
+        $messages = $this->getMessageArray();
     	$result = $this->parse([
-    		new Message('', ''),
     		null,
-    		new Message('', '')
     	]);
     	$result->shouldBeAnInstanceOf('Malas\BounceHandler\Model\Result');
-    	$result->getMessagesParsed()->shouldBe(2);
+    	$result->getMessagesParsed()->shouldBe(0);
     }
 
     function it_should_have_new_result_after_each_parse() {
@@ -36,11 +35,27 @@ class BounceHandlerSpec extends ObjectBehavior
     	$result->getMessagesParsed()->shouldBe(0);
     }
 
-    function it_should_have_messages_recipient_after_parsing() {
+    function it_should_have_messages_recipient_after_parsing_gmail_bounce() {
         $msgs = $this->getMessageArray();
         $msg = $this->parseMessage($msgs[0]);
 
         $msg->getRecipient()->shouldBe('ttt.eepe@lt.g4s.com');
+    }
+
+    function it_should_have_messages_recipient_after_parsing_vacation_autoreply() {
+        /*
+        $msgs = $this->getMessageArray();
+        $msg = $this->parseMessage($msgs[1]);
+
+        $msg->getRecipient()->shouldBe('visita@vvvgr.lt');
+        */
+    }
+
+    function it_should_have_messages_recipient_after_parsing_delivery_failure_bounce() {
+        $msgs = $this->getMessageArray();
+        $msg = $this->parseMessage($msgs[2]);
+
+        $msg->getRecipient()->shouldBe('fnc@ppp.ru');
     }
 
     /**

@@ -31,7 +31,19 @@ class BounceHandler {
 	}
 
 	public function parseMessage(Message $message) {
-		return $this->parseRecipient($message);
+		// get original message headers
+		$headers = $this->parseHeaders($message->getHeader());
+		// check subject of message. Mail delivery failure
+		$subject = isset($headers['subject']) ? $headers['subject'] : null;
+		// get original recipient
+		$original_message_headers = $this->parseHeaders($message->getBody());
+		
+		if (isset($original_message_headers['to'])) {
+			// message parsed successfully
+			$message->setRecipient($original_message_headers['to']);
+			$message->setStatus(Message::STATUS_OK);
+		}		
+		return $message;
 	}
 
 	protected function resetResult() {
@@ -39,11 +51,32 @@ class BounceHandler {
 	}
 
 	/**
-	 * Tries to parse recipient.
-	 * @param  Message $message Message to be parsed.
-	 * @return Message          The same Message given to parse, but with recipient set if the parsing was successfull. 
+	 * Parses email header like content into key => value array.
+	 * @param  string $headers Header like content
+	 * @return array           Header key => value array
 	 */
-	protected function parseRecipient(Message $message) {
-		return $message;
+	protected function parseHeaders($headers) {
+		// split headers string into separate lines
+		$headerLines = explode("\r\n", $headers);
+		$result = [];
+		foreach ($headerLines as $line) {
+            if (preg_match('/^([^\s.]*):\s*(.*)\s*/', $line, $matches)) {
+            	// line has a format of KEY: VALUE, so store the key and its value
+                $key = strtolower($matches[1]);
+                if (!isset($result[$key])) {
+                	// new key, so store its value
+                    $result[$key] = trim($matches[2]);
+                } elseif ($key && $matches[2] && $matches[2] != $result[$key]) {
+                	// key was already defined, so if the value is different from stored, append it to the previous one
+                    $result[$key] .= '|'.trim($matches[2]);
+                }
+            } elseif (preg_match('/^\s+(.+)\s*/', $line) && isset($key)) {
+            	// line is a continuation of previous line value so we append it to previously defined key
+            	// this can occur when the header value is too long to fit in one line
+            	// for example DKIM signature
+                $result[$key] .= ' '.$line;
+            }
+        }
+        return $result;
 	}
 }
