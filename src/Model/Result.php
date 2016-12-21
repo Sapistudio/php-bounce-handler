@@ -81,4 +81,20 @@ class Result {
 	public function addMessagesParsed($count) {
 		$this->parsed += $count;
 	}
+
+	public function getSoftBounced() {
+		return $this->soft_bounced;
+	}
+
+	public function getHardBounced() {
+		return $this->hard_bounced;
+	}
+
+	public function getUnknown() {
+		return $this->unknown;
+	}
+
+	public function getOther() {
+		return $this->other;
+	}
 }

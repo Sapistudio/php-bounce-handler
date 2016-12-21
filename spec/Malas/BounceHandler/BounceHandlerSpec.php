@@ -33,6 +33,10 @@ class BounceHandlerSpec extends ObjectBehavior
     	$result = $this->parse([]);
     	$result->shouldBeAnInstanceOf('Malas\BounceHandler\Model\Result');
     	$result->getMessagesParsed()->shouldBe(0);
+        $result->getSoftBounced()->shouldHaveCount(0);
+        $result->getHardBounced()->shouldHaveCount(0);
+        $result->getUnknown()->shouldHaveCount(0);
+        $result->getOther()->shouldHaveCount(0);
     }
 
     function it_should_have_messages_recipient_after_parsing_gmail_bounce() {
@@ -66,6 +70,16 @@ class BounceHandlerSpec extends ObjectBehavior
 
     function it_should_not_detect_bounce_from_header_delivery_status_notification() {
         $this->isBounceFromHeader(['subject' => 'Random subject failed life'])->shouldBe(false);
+    }
+
+    function it_should_have_parsed_messages_in_correct_result_array() {
+        $result = $this->parse($this->getMessageArray());
+        $result->shouldBeAnInstanceOf('Malas\BounceHandler\Model\Result');
+        $result->getMessagesParsed()->shouldBe(3);
+        $result->getSoftBounced()->shouldHaveCount(0);
+        $result->getHardBounced()->shouldHaveCount(2);
+        $result->getUnknown()->shouldHaveCount(1);
+        $result->getOther()->shouldHaveCount(0);
     }
 
     /**
