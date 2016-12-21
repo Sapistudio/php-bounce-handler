@@ -56,6 +56,18 @@ class BounceHandlerSpec extends ObjectBehavior
         $msg->getStatus()->shouldBe(Message::STATUS_UNKNOWN);
     }
 
+    function it_should_detect_bounce_from_header_mail_delivery_failed() {
+        $this->isBounceFromHeader(['subject' => 'Mail Delivery Failed'])->shouldBe(true);
+    }
+
+    function it_should_detect_bounce_from_header_delivery_status_notification() {
+        $this->isBounceFromHeader(['subject' => 'Delivery status notification'])->shouldBe(true);
+    }
+
+    function it_should_not_detect_bounce_from_header_delivery_status_notification() {
+        $this->isBounceFromHeader(['subject' => 'Random subject failed life'])->shouldBe(false);
+    }
+
     /**
      * Helper method returns an array of semi real world messages.
      * @return array Messages

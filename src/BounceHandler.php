@@ -33,14 +33,34 @@ class BounceHandler {
 	public function parseMessage(Message $message) {
 		// get original message headers
 		$headers = $this->parseHeaders($message->getHeader());
-		// get original recipient
-		$original_message_headers = $this->parseHeaders($message->getBody());
-		if (isset($original_message_headers['to'])) {
-			// message parsed successfully
-			$message->setRecipient($original_message_headers['to']);
-			$message->setStatus(Message::STATUS_OK);
+		if ($this->isBounceFromHeader($headers)) {
+			// for failed mail delivery bounces we need to fetch original message headers from body
+			$original_message_headers = $this->parseHeaders($message->getBody());
+			if (isset($original_message_headers['to'])) {
+				// message parsed successfully
+				$message->setRecipient($original_message_headers['to']);
+				// only set status to bounce, when all crucial information is present, otherwise it should remain status unknown
+				$message->setStatus(Message::STATUS_HARD_BOUNCE);
+			}
 		}
 		return $message;
+	}
+
+	/**
+	 * Checks if given header array can tell if the message is a bounced one.
+	 * @param  array   $headerArray Array of message headers
+	 * @return boolean              TRUE if message can is a bounce, FALSE otherwise.
+	 */
+	public function isBounceFromHeader($headerArray) {
+		if (!isset($headerArray['subject'])) {
+			throw new \InvalidArgumentException('Subject header must be present');
+		}
+		$subject = strtolower($headerArray['subject']);
+		$bounce_matches = 'mail delivery failed|failure notice|warning: message|delivery status notification|delivery failure|delivery problem|returned mail|undeliverable|returned mail|delivery errors|mail status report|mail system error|failure delivery|delivery notification|delivery has failed|undelivered mail|returned email|returning message to sender|returned to sender|message delayed|mdaemon notification|mailserver notification|mail delivery system|mail transaction failed';
+		if (preg_match('/'.$bounce_matches.'/', $subject)) {
+			return true;
+		}
+		return false;
 	}
 
 	protected function resetResult() {
