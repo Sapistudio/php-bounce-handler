@@ -60,7 +60,7 @@ class IMAPMailImport implements MailImportInterface {
         $limit = $total > $limit ? $limit : $total;
         
         $result = [];
-        for ($i = 1; $i <= $$limit; $i++) {
+        for ($i = 1; $i <= $limit; $i++) {
             $header = imap_fetchheader($imap, $i);
             $body = imap_body($imap, $i);
             $result[] = new Message($header, $body);
