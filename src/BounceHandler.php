@@ -52,7 +52,7 @@ class BounceHandler {
 	 * @return boolean              TRUE if message can is a bounce, FALSE otherwise.
 	 */
 	public function isBounceFromSubject($subject) {
-		$subject = strtolower($headerArray['subject']);
+		$subject = strtolower($subject);
 		$bounce_matches = 'mail delivery failed|failure notice|warning: message|delivery status notification|delivery failure|delivery problem|returned mail|undeliverable|returned mail|delivery errors|mail status report|mail system error|failure delivery|delivery notification|delivery has failed|undelivered mail|returned email|returning message to sender|returned to sender|message delayed|mdaemon notification|mailserver notification|mail delivery system|mail transaction failed';
 		if (preg_match('/'.$bounce_matches.'/', $subject)) {
 			return true;
