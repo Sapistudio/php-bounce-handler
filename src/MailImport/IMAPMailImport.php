@@ -71,6 +71,13 @@ class IMAPMailImport implements MailImportInterface {
         if ($this->getDeleteMail()) {
         	imap_expunge($imap);
         }
+        $error = imap_errors();
+        // insecure connection should not print out notice.
+		if (count($error) > 1 || $error[0] != 'SECURITY PROBLEM: insecure server advertised AUTH=PLAIN') {
+		  // More than 1 error or not the expected error, throw an exception
+		  dump($error);
+		  throw new Exception('IMAP error detected');
+		}
         imap_close($imap);
         return $result;
 	}
