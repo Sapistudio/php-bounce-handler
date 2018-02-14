@@ -2,3 +2,5 @@ php:
   build: docker/php
   volumes:
     - ./:/var/www/
+  ports:
+    - "8080:80"
