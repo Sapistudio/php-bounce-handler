@@ -2,6 +2,31 @@
 
 [![Build Status](https://travis-ci.org/malas/php-bounce-handler.svg?branch=master)](https://travis-ci.org/malas/php-bounce-handler)
 
+## Example usage
+
+### Import and parse emails imported via IMAP
+```
+use Malas\BounceHandler\BounceHandler;
+use Malas\BounceHandler\BounceHandler;
+
+$import = new IMAPMailImport([
+  // imap_open mailbox string
+  'mailbox' => '{imap.example.com:143/imap/notls}INBOX',
+  'username' => 'user@example.com',
+  'password' => 'secret-password',
+  // do you want to delete the emails after processing true|false
+  'delete_mail' => true,
+  'options' => CL_EXPUNGE,
+  ]);
+// array of Malas\BounceHandler\Model\Message objects ready for parsing
+$mails = $import->import(100);
+
+$handler = new BounceHandler();
+// final object with the parsed results
+// please check Malas\BounceHandler\Model\Result for more details
+$result = $handler->parse($mails);
+```
+
 ## Running tests on Docker container
 
 In order to develop this library/run the tests, the easiest way is to run docker container.
