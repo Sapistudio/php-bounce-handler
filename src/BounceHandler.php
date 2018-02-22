@@ -31,33 +31,59 @@ class BounceHandler {
 	}
 
 	public function parseMessage(Message $message) {
-		// get original message headers
+    // bounce part of parsing
+    $message->setStatusCode($this->parseStatusCode($message->getBody()));
 		$headers = $this->parseHeaders($message->getHeader());
 		if (isset($headers['subject']) && $this->isBounceFromSubject($headers['subject'])) {
-			// for failed mail delivery bounces we need to fetch original message headers from body
-			$original_message_headers = $this->parseHeaders($message->getBody());
-			if (isset($original_message_headers['to'])) {
-				// message parsed successfully
-				$message->setRecipient($original_message_headers['to']);
-				// only set status to bounce, when all crucial information is present, otherwise it should remain status unknown
-				$message->setStatus(Message::STATUS_HARD_BOUNCE);
-			}
+      switch ($this->isBounceFromStatusCode($message->getStatusCode())) {
+        case 'hard':
+          $message->setStatus(Message::STATUS_HARD_BOUNCE);
+          break;
+        case 'soft':
+          $message->setStatus(Message::STATUS_SOFT_BOUNCE);
+        break;
+        default:
+          $message->setStatus(Message::STATUS_UNKNOWN);
+      }
 		}
-    $message->setStatusCode($this->parseStatusCode($message->getBody()));
-    dump($message);
+
+    // recipient part of parsing
+    // for failed mail delivery bounces we need to fetch original message headers from body
+    $original_message_headers = $this->parseHeaders($message->getBody());
+    if (isset($original_message_headers['to'])) {
+      // message parsed successfully
+      $message->setRecipient($original_message_headers['to']);
+    }
 		return $message;
 	}
 
 	/**
 	 * Checks if given sibject can tell if the message is a bounced one.
 	 * @param  array   $subject     Subject of the message
-	 * @return boolean              TRUE if message can is a bounce, FALSE otherwise.
+	 * @return boolean              TRUE if message is a bounce, FALSE otherwise.
 	 */
 	public function isBounceFromSubject($subject) {
 		$subject = strtolower($subject);
 		$bounce_matches = 'mail delivery failed|failure notice|warning: message|delivery status notification|delivery failure|delivery problem|returned mail|undeliverable|returned mail|delivery errors|mail status report|mail system error|failure delivery|delivery notification|delivery has failed|undelivered mail|returned email|returning message to sender|returned to sender|message delayed|mdaemon notification|mailserver notification|mail delivery system|mail transaction failed';
 		if (preg_match('/'.$bounce_matches.'/', $subject)) {
 			return true;
+		}
+		return false;
+	}
+
+  /**
+	 * Checks if given status code is a bounced one.
+	 * @param  string   $code       Status code of the message in a RFC 3463 form
+	 * @return mixed               'hard' or 'soft' if message is a bounce, FALSE otherwise.
+	 */
+	public function isBounceFromStatusCode($code) {
+    if (!$code) return false;
+    $code = substr($code, 0, 1);
+		if ($code === '5') {
+			return 'hard';
+		}
+    if ($code === '4') {
+			return 'soft';
 		}
 		return false;
 	}
