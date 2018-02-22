@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 namespace Malas\BounceHandler;
 
@@ -6,7 +6,7 @@ use Malas\BounceHandler\Model\Result;
 use Malas\BounceHandler\Model\Message;
 
 /**
- * Main class for handling the bounced emails. 
+ * Main class for handling the bounced emails.
  */
 class BounceHandler {
 
@@ -43,6 +43,8 @@ class BounceHandler {
 				$message->setStatus(Message::STATUS_HARD_BOUNCE);
 			}
 		}
+    $message->setStatusCode($this->parseStatusCode($message->getBody()));
+    dump($message);
 		return $message;
 	}
 
@@ -92,5 +94,18 @@ class BounceHandler {
             }
         }
         return $result;
+	}
+
+  /**
+	 * Parses email body and tries to extract RFC 3463 email status code..
+	 * @param  string $body    The body of email
+	 * @return string          A string representation of RFC 3463 email status code or empty string if status code could not be found.
+	 */
+	protected function parseStatusCode($body) {
+		$result = [];
+    if (preg_match('/status: ([2|4|5]\.[0-999]+\.[0-999]+)/i', $body, $result)) {
+      return $result[1];
+    }
+    return '';
 	}
 }

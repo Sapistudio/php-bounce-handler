@@ -2,6 +2,12 @@
 
 [![Build Status](https://travis-ci.org/malas/php-bounce-handler.svg?branch=master)](https://travis-ci.org/malas/php-bounce-handler)
 
+## Overview
+
+This library parses bounced email reports and parses and extracts recipient and [RFC 3463](https://tools.ietf.org/html/rfc3463) status code. From these fields it can assign an email one of the Message statuses - hard bounce, soft bounce, unknown or "ok" status.
+
+"ok" status in most cases occurs when receiving vacation/auto-responder emails.
+
 ## Example usage
 
 ### Import and parse emails imported via IMAP

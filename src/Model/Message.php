@@ -1,9 +1,9 @@
-<?php 
+<?php
 
 namespace Malas\BounceHandler\Model;
 
 /**
- * Message class represents a single email message. 
+ * Message class represents a single email message.
  */
 class Message {
 
@@ -16,11 +16,13 @@ class Message {
 	protected $body;
 	protected $recipient;
 
+  protected $status_code;
 	protected $status;
 
 	public function __construct($header, $body) {
 		$this->header = $header;
 		$this->body = $body;
+    $this->status_code = '';
 		$this->status = self::STATUS_UNKNOWN;
 	}
 
@@ -30,6 +32,14 @@ class Message {
 
 	public function getRecipient() {
 		return $this->recipient;
+	}
+
+  public function setStatusCode($status_code) {
+		$this->status_code = $status_code;
+	}
+
+	public function getStatusCode() {
+		return $this->status_code;
 	}
 
 	public function setStatus($status) {
